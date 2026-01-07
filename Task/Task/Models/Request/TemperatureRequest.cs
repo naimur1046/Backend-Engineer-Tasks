@@ -3,11 +3,11 @@ using Controllers.Services;
 
 namespace Controllers.Models.Request;
 
-public class DateRequest : IValidatableObject
+public class TemperatureRequest : IValidatableObject
 {
     [Required(ErrorMessage = "StartDate is required")]
     public string StartDate { get; set; } = string.Empty;
-    
+
     [Required(ErrorMessage = "EndDate is required")]
     public string EndDate { get; set; } = string.Empty;
 

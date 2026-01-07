@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<INumberService, NumberService>();
+builder.Services.AddScoped<ITemperatureService, TemperatureService>();
+builder.Services.AddScoped<IDateService, DateService>();
 
 builder.Services.AddEndpointsApiExplorer();
 
