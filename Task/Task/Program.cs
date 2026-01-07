@@ -1,8 +1,11 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Controllers.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<INumberService, NumberService>();
 
 builder.Services.AddEndpointsApiExplorer();
 
