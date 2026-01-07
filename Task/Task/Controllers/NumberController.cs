@@ -1,4 +1,6 @@
 using Controllers.Models.Request;
+using Controllers.Models.Response;
+using Controllers.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Controllers.Controllers;
@@ -8,18 +10,26 @@ namespace Controllers.Controllers;
 public class NumberController : ControllerBase
 {
     private readonly ILogger<NumberController> _logger;
-    
-    public NumberController(ILogger<NumberController> logger)
+    private readonly INumberService _numberService;
+
+    public NumberController(ILogger<NumberController> logger, INumberService numberService)
     {
         _logger = logger;
+        _numberService = numberService;
     }
-    
+
     [HttpPost("number-to-words")]
     public IActionResult GetNumberToWords([FromBody] NumberRequest request)
     {
-        _logger.LogInformation("Converting {number} to words", 
-            request.Number);
-        
-        return Ok();
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _logger.LogInformation("Converting {number} to words", request.Number);
+
+        var words = _numberService.ConvertToWords(request.Number);
+
+        return Ok(new NumberResponse { Words = words });
     }
 }
