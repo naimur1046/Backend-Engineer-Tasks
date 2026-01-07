@@ -7,8 +7,7 @@ public class DateRequest : IValidatableObject
 {
     [Required(ErrorMessage = "StartDate is required")]
     public string StartDate { get; set; } = string.Empty;
-
-
+    
     [Required(ErrorMessage = "EndDate is required")]
     public string EndDate { get; set; } = string.Empty;
 
