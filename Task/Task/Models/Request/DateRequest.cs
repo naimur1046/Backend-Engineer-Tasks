@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Controllers.Services;
 
-
 namespace Controllers.Models.Request;
-
 
 public class DateRequest : IValidatableObject
 {
@@ -14,17 +12,14 @@ public class DateRequest : IValidatableObject
     [Required(ErrorMessage = "EndDate is required")]
     public string EndDate { get; set; } = string.Empty;
 
-
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         var dateService = validationContext.GetService(typeof(IDateService)) as IDateService;
-
 
         if (dateService == null)
         {
             dateService = new DateService();
         }
-
 
         if (!dateService.IsValidDate(StartDate))
         {
@@ -32,7 +27,6 @@ public class DateRequest : IValidatableObject
                 "StartDate must be in format YYYY-MM-DD with valid date values",
                 new[] { nameof(StartDate) });
         }
-
 
         if (!dateService.IsValidDate(EndDate))
         {
