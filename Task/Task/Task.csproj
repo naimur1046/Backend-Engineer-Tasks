@@ -6,6 +6,6 @@
         <RootNamespace>Controllers</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
     </ItemGroup>
 </Project>
