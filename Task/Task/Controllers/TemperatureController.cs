@@ -18,8 +18,8 @@ public class TemperatureController : ControllerBase
         _temperatureService = temperatureService;
     }
     
-    [HttpPost("temperature-stats-for-dhaka ")]
-    public IActionResult GetTemperatureStatsForDhaka([FromBody] TemperatureRequest request)
+    [HttpPost("temperature-stats-for-dhaka")]
+    public async Task<IActionResult> GetTemperatureStatsForDhaka([FromBody] TemperatureRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -29,8 +29,8 @@ public class TemperatureController : ControllerBase
         _logger.LogInformation("Retrieving temperature details between {StartDate} and {EndDate}",
             request.StartDate, request.EndDate);
 
-        var temperatureStates = _temperatureService.GetTemperatureStatsAsync(request.StartDate, request.EndDate);
+        var temperatureStates = await _temperatureService.GetTemperatureStatsAsync(request.StartDate, request.EndDate);
 
-        return Ok(new TemperatureResponse() );
+        return Ok(temperatureStates);
     }
 }
