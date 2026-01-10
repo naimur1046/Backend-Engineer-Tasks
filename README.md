@@ -33,8 +33,10 @@ This project implements three REST API endpoints as part of the Backend Engineer
 git clone https://github.com/naimur1046/Backend-Engineer-Tasks.git
 cd Task
 
+
 # 2. Restore dependencies and build
 dotnet build
+
 
 cd Task
 # 3. Run the application
@@ -72,6 +74,7 @@ To build and run this application, you need:
 # Install .NET SDK
 brew install --cask dotnet-sdk
 
+
 # Or download from Microsoft
 # https://dotnet.microsoft.com/download
 ```
@@ -84,9 +87,10 @@ wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.
 sudo dpkg -i packages-microsoft-prod.deb
 rm packages-microsoft-prod.deb
 
+
 # Install .NET SDK
 sudo apt-get update
-sudo apt-get install -y dotnet-sdk-8.0
+sudo apt-get install -y dotnet-sdk-9.0
 ```
 
 **On Windows:**
@@ -180,7 +184,7 @@ dotnet publish -c Release -o ./publish
 
 ```bash
 cd publish
-dotnet YourProjectName.dll
+dotnet Task.dll
 ```
 
 ## API Documentation
@@ -214,7 +218,7 @@ Swagger UI provides an interactive interface to explore and test the API:
 
 Calculate the number of days between two dates.
 
-**Endpoint:** `POST /api/days`
+**Endpoint:** `POST /api/date/number-of-days`
 
 **Request Body:**
 
@@ -238,7 +242,7 @@ Calculate the number of days between two dates.
 **Example using curl:**
 
 ```bash
-curl -X POST http://localhost:8080/api/days \
+curl -X POST http://localhost:5000/api/date/number-of-days \
   -H "Content-Type: application/json" \
   -d '{"startDate": "2024-01-01", "endDate": "2024-12-31"}'
 ```
@@ -249,7 +253,7 @@ curl -X POST http://localhost:8080/api/days \
 
 Convert a number to its English word representation.
 
-**Endpoint:** `POST /api/number-to-words`
+**Endpoint:** `POST /api/number/number-to-words`
 
 **Request Body:**
 
@@ -278,16 +282,19 @@ Convert a number to its English word representation.
 
 ```bash
 # Example 1: Whole number
-curl -X POST http://localhost:8080/api/number-to-words \
+curl -X POST http://localhost:5000/api/number/number-to-words \
   -H "Content-Type: application/json" \
   -d '{"number": 105}'
 
+
 # Response: {"words": "one hundred five"}
 
+
 # Example 2: Decimal number
-curl -X POST http://localhost:8080/api/number-to-words \
+curl -X POST http://localhost:5000/api/number/number-to-words \
   -H "Content-Type: application/json" \
   -d '{"number": 36.40}'
+
 
 # Response: {"words": "thirty six point four zero"}
 ```
@@ -298,7 +305,7 @@ curl -X POST http://localhost:8080/api/number-to-words \
 
 Retrieve average, minimum, and maximum temperatures for Dhaka over a date range.
 
-**Endpoint:** `POST /api/temperature/dhaka`
+**Endpoint:** `POST /api/temperature/temperature-stats-for-dhaka`
 
 **Request Body:**
 
@@ -327,14 +334,9 @@ Retrieve average, minimum, and maximum temperatures for Dhaka over a date range.
 **Example using curl:**
 
 ```bash
-curl -X 'POST' \
-  'http://localhost:5000/api/Temperature/temperature-stats-for-dhaka ' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "startDate": "2026-01-01",
-  "endDate": "2026-01-07"
-  }'
+curl -X POST http://localhost:5000/api/temperature/temperature-stats-for-dhaka \
+  -H "Content-Type: application/json" \
+  -d '{"startDate": "2024-01-01", "endDate": "2024-01-07"}'
 ```
 
 **Notes:**
@@ -357,29 +359,20 @@ The application uses `appsettings.json` for configuration:
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*",
-  "OpenMeteo": {
-    "BaseUrl": "https://api.open-meteo.com/v1",
-    "Latitude": 23.8103,
-    "Longitude": 90.4125
-  },
-  "Swagger": {
-    "Title": "Backend Tasks API",
-    "Version": "v1",
-    "Description": "REST API for date calculations, number conversion, and weather stats"
-  }
+  "AllowedHosts": "*"
 }
 ```
 
 ### Environment-Specific Configuration
 
-For production, create `appsettings.Production.json`:
+Development configuration in `appsettings.Development.json`:
 
 ```json
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Warning"
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
     }
   }
 }
@@ -394,24 +387,21 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Eskimi Backend Tasks API",
+        Title = "Backend Task API",
         Version = "v1",
-        Description = "REST API for the Eskimi Backend Engineer assessment tasks"
+        Description = "This is a take-home backend engineering assignment"
     });
 });
 
+
 // Enable Swagger middleware
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-    c.RoutePrefix = "swagger";
-});
+app.UseSwaggerUI();
 ```
 
 ## Testing
 
-The project includes comprehensive unit tests using xUnit, NUnit, or MSTest.
+The project includes comprehensive unit tests using xUnit.
 
 ### Run all tests:
 
@@ -434,13 +424,13 @@ dotnet test --collect:"XPlat Code Coverage"
 ### Run specific test project:
 
 ```bash
-dotnet test tests/Task.Test/Task.Test.csproj
+dotnet test Task/Task.Test/Task.Test.csproj
 ```
 
 ### Run specific test class:
 
 ```bash
-dotnet test --filter "FullyQualifiedName~DaysCalculatorTests"
+dotnet test --filter "FullyQualifiedName~DateServiceTests"
 ```
 
 ### Generate coverage report (using ReportGenerator):
@@ -449,8 +439,10 @@ dotnet test --filter "FullyQualifiedName~DaysCalculatorTests"
 # Install ReportGenerator tool
 dotnet tool install -g dotnet-reportgenerator-globaltool
 
+
 # Run tests with coverage
 dotnet test --collect:"XPlat Code Coverage"
+
 
 # Generate HTML report
 reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
@@ -458,13 +450,12 @@ reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport"
 
 ### Test output:
 
-Tests are executed automatically during the build process and provide detailed feedback on:
+Tests provide detailed feedback on:
 
 - Date calculation accuracy (including leap years)
-- Number conversion edge cases
-- Temperature data processing
-- API endpoint responses
-- Error handling and validation
+- Number-to-words conversion edge cases
+- Temperature data processing with mocked HTTP responses
+- Input validation and error handling
 
 ## Docker
 
@@ -474,24 +465,28 @@ Here's a multi-stage Dockerfile for ASP.NET Core:
 
 ```dockerfile
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
+
 # Copy csproj and restore dependencies
-COPY ["Task/Task.csproj", "Task/Task/"]
+COPY ["Task/Task/Task.csproj", "Task/"]
 RUN dotnet restore "Task/Task.csproj"
+
 
 # Copy everything else and build
 COPY . .
-WORKDIR "/src/src/Task"
+WORKDIR "/src/Task/Task"
 RUN dotnet build "Task.csproj" -c Release -o /app/build
+
 
 # Publish stage
 FROM build AS publish
 RUN dotnet publish "Task.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -510,6 +505,7 @@ docker build -t backend-tasks .
 ```bash
 # Run on port 8080
 docker run -d -p 8080:80 --name api backend-tasks
+
 
 # With environment variables
 docker run -d -p 8080:80 \
@@ -561,30 +557,39 @@ docker-compose down
 ```
 .
 ├── Task/
-│   └── Task/
-│       ├── Controllers/            # API Controllers
-│       │   ├── DaysController.cs
-│       │   ├── NumberToWordsController.cs
-│       │   └── TemperatureController.cs
-│       ├── Services/               # Business logic
-│       │   ├── DaysCalculator.cs
-│       │   ├── NumberToWordsService.cs
-│       │   └── TemperatureService.cs
-│       ├── Models/                 # DTOs and data models
-│       │   ├── DaysRequest.cs
-│       │   ├── NumberToWordsRequest.cs
-│       │   └── TemperatureRequest.cs
-│       ├── Program.cs              # Application entry point
-│       ├── appsettings.json        # Configuration
-│       └── YourProjectName.csproj  # Project file
-├──     Task.Tests/
-│       ├── DaysCalculatorTests.cs
-│       ├── NumberToWordsTests.cs
-│       ├── TemperatureServiceTests.cs
-│       └── YourProjectName.Tests.csproj
-├── Task.sln             # Solution file
-├── Dockerfile                      # Docker configuration
-└── README.md                       # This file
+│   ├── Task/                           # Main API Project
+│   │   ├── Controllers/                # API Controllers
+│   │   │   ├── DateController.cs
+│   │   │   ├── NumberController.cs
+│   │   │   └── TemperatureController.cs
+│   │   ├── Services/                   # Business logic
+│   │   │   ├── DateService.cs
+│   │   │   ├── NumberService.cs
+│   │   │   └── TemperatureService.cs
+│   │   ├── Models/                     # DTOs and data models
+│   │   │   ├── Request/
+│   │   │   │   ├── DateRequest.cs
+│   │   │   │   ├── NumberRequest.cs
+│   │   │   │   └── TemperatureRequest.cs
+│   │   │   └── Response/
+│   │   │       ├── DateResponse.cs
+│   │   │       ├── NumberResponse.cs
+│   │   │       └── TemperatureResponse.cs
+│   │   ├── Properties/
+│   │   │   └── launchSettings.json
+│   │   ├── Program.cs                  # Application entry point
+│   │   ├── appsettings.json            # Configuration
+│   │   ├── appsettings.Development.json
+│   │   └── Task.csproj                 # Project file
+│   │
+│   └── Task.Test/                      # Test Project
+│       ├── Services/
+│       │   ├── DateServiceTests.cs
+│       │   ├── NumberServiceTests.cs
+│       │   └── TemperatureServiceTests.cs
+│       └── Task.Test.csproj
+│
+└── README.md                           # This file
 ```
 
 ## NuGet Packages
@@ -594,20 +599,17 @@ The project uses the following key NuGet packages:
 ### Runtime Dependencies
 
 ```xml
-<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
-<PackageReference Include="Newtonsoft.Json" Version="13.0.3" /> <!-- If using Newtonsoft instead of System.Text.Json -->
+<PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
 ```
 
 ### Test Dependencies
 
 ```xml
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-<PackageReference Include="xunit" Version="2.6.2" />
-<PackageReference Include="xunit.runner.visualstudio" Version="2.5.4" />
-<PackageReference Include="Moq" Version="4.20.70" />
-<PackageReference Include="FluentAssertions" Version="6.12.0" />
-<PackageReference Include="coverlet.collector" Version="6.0.0" />
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+<PackageReference Include="xunit" Version="2.9.2" />
+<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+<PackageReference Include="Moq" Version="4.20.72" />
+<PackageReference Include="coverlet.collector" Version="6.0.2" />
 ```
 
 ### Install a package
@@ -652,12 +654,12 @@ The weather service:
 
 ### Technology Stack
 
-- **Framework:** ASP.NET Core 6.0/7.0/8.0
-- **Language:** C# 10/11/12
+- **Framework:** ASP.NET Core 9.0
+- **Language:** C# 13
 - **API Documentation:** Swagger/Swashbuckle
 - **JSON Processing:** System.Text.Json
-- **Testing:** xUnit/NUnit/MSTest
-- **HTTP Client:** HttpClient
+- **Testing:** xUnit with Moq
+- **HTTP Client:** HttpClientFactory
 - **Dependency Injection:** Built-in ASP.NET Core DI
 - **Build Tool:** .NET CLI / MSBuild
 
