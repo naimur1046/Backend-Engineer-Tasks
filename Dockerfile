@@ -1,5 +1,5 @@
 # Stage 1: Build and Test
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
@@ -26,7 +26,7 @@ FROM build AS publish
 RUN dotnet publish "Task.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 # Stage 3: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 
 # Create a non-root user for security
@@ -36,8 +36,8 @@ RUN addgroup --system --gid 1000 appuser && \
 # Copy published files
 COPY --from=publish /app/publish .
 
-# Change ownership to non-root user
-RUN chown -R appuser:appuser /app
+# Create logs directory and set permissions
+RUN mkdir -p /app/__logs && chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
@@ -46,12 +46,12 @@ USER appuser
 EXPOSE 8080
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:5050
+ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-     CMD curl --fail http://localhost:5050/health || exit 1
+     CMD curl --fail http://localhost:8080/health || exit 1
 
 # Entry point
 ENTRYPOINT ["dotnet", "Task.dll"]
