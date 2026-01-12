@@ -5,6 +5,7 @@ public interface IDateService
    int CalculateDaysBetween(string startDate, string endDate);
    (int year, int month, int day) ParseDate(string date);
    bool IsValidDate(string date);
+   bool IsStartDateBeforeOrEqualEndDate(string startDate, string endDate);
 }
 
 public class DateService : IDateService
@@ -57,13 +58,24 @@ public class DateService : IDateService
            {
                return false;
            }
-           
+
            return IsValidDateComponents(year, month, day);
        }
        catch
        {
            return false;
        }
+   }
+
+   public bool IsStartDateBeforeOrEqualEndDate(string startDate, string endDate)
+   {
+       var (startYear, startMonth, startDay) = ParseDate(startDate);
+       var (endYear, endMonth, endDay) = ParseDate(endDate);
+
+       var startDays = CountDaysFromEpoch(startYear, startMonth, startDay);
+       var endDays = CountDaysFromEpoch(endYear, endMonth, endDay);
+
+       return startDays <= endDays;
    }
 
    private bool IsValidDateComponents(int year, int month, int day)
