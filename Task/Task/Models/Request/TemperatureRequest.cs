@@ -20,18 +20,29 @@ public class TemperatureRequest : IValidatableObject
             dateService = new DateService();
         }
 
-        if (!dateService.IsValidDate(StartDate))
+        var isStartDateValid = dateService.IsValidDate(StartDate);
+        var isEndDateValid = dateService.IsValidDate(EndDate);
+
+        if (!isStartDateValid)
         {
             yield return new ValidationResult(
                 "StartDate must be in format YYYY-MM-DD with valid date values",
                 new[] { nameof(StartDate) });
         }
 
-        if (!dateService.IsValidDate(EndDate))
+        if (!isEndDateValid)
         {
             yield return new ValidationResult(
                 "EndDate must be in format YYYY-MM-DD with valid date values",
                 new[] { nameof(EndDate) });
+        }
+
+        // Only validate date order if both dates are valid
+        if (isStartDateValid && isEndDateValid && !dateService.IsStartDateBeforeOrEqualEndDate(StartDate, EndDate))
+        {
+            yield return new ValidationResult(
+                "StartDate must be before or equal to EndDate",
+                new[] { nameof(StartDate), nameof(EndDate) });
         }
     }
 }
