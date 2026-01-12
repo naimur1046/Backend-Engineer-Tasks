@@ -246,7 +246,7 @@ public class DateServiceTests
    #endregion
 
    #region Edge Cases
-   
+
    [Fact]
    public void CalculateDaysBetween_DistantDates_ReturnsCorrectDays()
    {
@@ -260,6 +260,59 @@ public class DateServiceTests
        var result = _service.CalculateDaysBetween("2024-06-10", "2024-06-20");
        Assert.Equal(10, result);
    }
-   
+
+   #endregion
+
+   #region IsStartDateBeforeOrEqualEndDate
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_StartBeforeEnd_ReturnsTrue()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-01-01", "2024-01-15");
+       Assert.True(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_SameDate_ReturnsTrue()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-01-15", "2024-01-15");
+       Assert.True(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_StartAfterEnd_ReturnsFalse()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-01-15", "2024-01-01");
+       Assert.False(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_AcrossYears_ReturnsTrue()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2023-12-31", "2024-01-01");
+       Assert.True(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_AcrossYearsReversed_ReturnsFalse()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-01-01", "2023-12-31");
+       Assert.False(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_DifferentMonthsSameYear_ReturnsTrue()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-03-15", "2024-06-20");
+       Assert.True(result);
+   }
+
+   [Fact]
+   public void IsStartDateBeforeOrEqualEndDate_DifferentMonthsSameYearReversed_ReturnsFalse()
+   {
+       var result = _service.IsStartDateBeforeOrEqualEndDate("2024-06-20", "2024-03-15");
+       Assert.False(result);
+   }
+
    #endregion
 }
