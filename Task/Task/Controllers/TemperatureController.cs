@@ -26,11 +26,34 @@ public class TemperatureController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        _logger.LogInformation("Retrieving temperature details between {StartDate} and {EndDate}",
-            request.StartDate, request.EndDate);
+        try
+        {
+            _logger.LogInformation("Retrieving temperature details between {StartDate} and {EndDate}",
+                request.StartDate, request.EndDate);
 
-        var temperatureStates = await _temperatureService.GetTemperatureStatsAsync(request.StartDate, request.EndDate);
+            var temperatureStates = await _temperatureService.GetTemperatureStatsAsync(request.StartDate, request.EndDate);
 
-        return Ok(temperatureStates);
+            return Ok(temperatureStates);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid argument provided for temperature stats request");
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "No temperature data available for the specified date range");
+            return NotFound(new { error = ex.Message });
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Failed to fetch temperature data from external API");
+            return StatusCode(503, new { error = "Weather service temporarily unavailable. Please try again later." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error occurred while retrieving temperature stats");
+            return StatusCode(500, new { error = "An unexpected error occurred. Please try again later." });
+        }
     }
 }
