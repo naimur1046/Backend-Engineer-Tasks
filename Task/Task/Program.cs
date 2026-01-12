@@ -91,10 +91,6 @@ try
 
     app.MapControllers();
 
-    // Health check endpoint for Docker
-    app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
-        .WithName("HealthCheck");
-
     app.MapGet("/error", () => Results.Problem("An error occurred processing your request."))
         .ExcludeFromDescription();
 
